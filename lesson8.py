@@ -1,11 +1,13 @@
 import os
 import mmap
+import re
 
 migrations = 'Migrations'
 current_dir = os.path.dirname(os.path.abspath(__file__))
 migration_path = os.path.join(current_dir, migrations)
 
 keepGoing = True
+
 
 def find_from_file(file_path, needed_word):
     try:
@@ -20,7 +22,8 @@ def find_from_file(file_path, needed_word):
 
 print(f"Абсолютный путь: {migration_path}")
 
-while (keepGoing):
+
+while keepGoing:
     try: 
         needed_words = input('Enter needed word: ')
         if not needed_words:
@@ -30,10 +33,18 @@ while (keepGoing):
         list_files = os.listdir(migration_path)
         number_files = 0
         for file_name in list_files:
+
+            pattern = re.compile('.+\.sql$')
+            result = pattern.match(file_name)
+            if not result:
+                continue
+
             file_path = os.path.join(migration_path, file_name)
+
             if find_from_file(file_path, needed_words):
                 print(file_name)
                 number_files += 1
+
         print(f"Количество файлов {number_files}")
     except KeyboardInterrupt:
         keepGoing = False
